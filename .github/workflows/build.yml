@@ -1,0 +1,38 @@
+name: 🍎 iOS Build (Clean Test)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+
+      - name: Package IPA
+        run: |
+          mkdir -p build/ipa
+          cd build/ios/iphoneos
+          mv Runner.app ../../../ipa/
+          cd ../../../ipa
+          zip -r -y tinhocstar.ipa Runner.app
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinhocstar-ipa
+          path: build/ipa/tinhocstar.ipa
