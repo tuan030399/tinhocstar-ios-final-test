@@ -1,32 +1,39 @@
-name: tinhocstar
-description: A new Flutter project.
-publish_to: 'none'
-version: 1.0.0+1
+name: 🍎 iOS Build (Final Version)
 
-environment:
-  sdk: '>=3.2.0 <4.0.0'
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
-dependencies:
-  flutter:
-    sdk: flutter
-  cupertino_icons: ^1.0.2
-  # --- CÁC DEPENDENCY CỦA BẠN BẮT ĐẦU TỪ ĐÂY ---
-  gsheets: ^0.5.0
-  intl: ^0.19.0
-  google_mlkit_text_recognition: ^0.11.0
-  image_picker: ^1.0.7
-  permission_handler: ^11.3.1
-  crypto: ^3.0.3
-  http: ^1.2.1
-  file_picker: ^8.0.0+1
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
 
-flutter:
-  uses-material-design: true
+      - name: Create & Install
+        run: |
+          flutter create .
+          flutter pub get
 
-  # --- KHAI BÁO ASSETS CHO LOGO CỦA BẠN ---
-  assets:
-    - assets/images/
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+
+      - name: Package IPA
+        run: |
+          mkdir -p staging/Payload
+          cp -r build/ios/Release-iphoneos/Runner.app staging/Payload/
+          cd staging
+          zip -r ../tinhocstar.ipa *
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinhocstar-ipa
+          path: tinhocstar.ipa
