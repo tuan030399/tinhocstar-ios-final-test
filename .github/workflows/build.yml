@@ -1,46 +1,32 @@
-name: 🍎 iOS Build (Final Version)
+name: tinhocstar
+description: A new Flutter project.
+publish_to: 'none'
+version: 1.0.0+1
 
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
+environment:
+  sdk: '>=3.2.0 <4.0.0'
 
-jobs:
-  build:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  # --- CÁC DEPENDENCY CỦA BẠN BẮT ĐẦU TỪ ĐÂY ---
+  gsheets: ^0.5.0
+  intl: ^0.19.0
+  google_mlkit_text_recognition: ^0.11.0
+  image_picker: ^1.0.7
+  permission_handler: ^11.3.1
+  crypto: ^3.0.3
+  http: ^1.2.1
+  file_picker: ^8.0.0+1
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
 
-      - name: Create & Install
-        run: |
-          flutter create .
-          flutter pub get
+flutter:
+  uses-material-design: true
 
-      - name: Build iOS
-        run: flutter build ios --release --no-codesign
-
-      # ----- PHẦN NÉN FILE ĐÃ ĐƯỢC SỬA LẠI HOÀN TOÀN -----
-      - name: Package IPA
-        run: |
-          # 1. Tạo một thư mục tạm tên là "staging" và thư mục "Payload" bên trong nó
-          mkdir -p staging/Payload
-          
-          # 2. Copy file app đã build thành công vào thư mục Payload
-          #    Đường dẫn đúng là build/ios/Release-iphoneos/
-          cp -r build/ios/Release-iphoneos/Runner.app staging/Payload/
-          
-          # 3. Đi vào thư mục staging và nén toàn bộ nội dung của nó
-          cd staging
-          zip -r ../tinhocstar.ipa *
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: tinhocstar-ipa
-          path: tinhocstar.ipa # File .ipa bây giờ nằm ở thư mục gốc
+  # --- KHAI BÁO ASSETS CHO LOGO CỦA BẠN ---
+  assets:
+    - assets/images/
