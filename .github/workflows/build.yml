@@ -20,6 +20,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # ----- DÒNG MỚI ĐÃ THÊM VÀO ĐÂY -----
+      - name: Create iOS Project Files
+        run: flutter create .
+      # ------------------------------------
+
       - name: Build iOS
         run: flutter build ios --release --no-codesign
 
